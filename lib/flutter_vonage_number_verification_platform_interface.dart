@@ -1,29 +1,45 @@
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import 'dart:convert';
 
-import 'flutter_vonage_number_verification_method_channel.dart';
+import 'package:flutter/services.dart';
 
-abstract class FlutterVonageNumberVerificationPlatform extends PlatformInterface {
-  /// Constructs a FlutterVonageNumberVerificationPlatform.
-  FlutterVonageNumberVerificationPlatform() : super(token: _token);
+class FlutterVonageNumberVerificationSDK {
+  static const _methodChannel =
+      MethodChannel('flutter_vonage_number_verification');
 
-  static final Object _token = Object();
-
-  static FlutterVonageNumberVerificationPlatform _instance = MethodChannelFlutterVonageNumberVerification();
-
-  /// The default instance of [FlutterVonageNumberVerificationPlatform] to use.
+  /// Makes an HTTP GET request to [url] over cellular, even when on WiFi.
   ///
-  /// Defaults to [MethodChannelFlutterVonageNumberVerification].
-  static FlutterVonageNumberVerificationPlatform get instance => _instance;
+  /// Designed as part of the Vonage Number Verification process.
+  Future<FlutterVonageSDKResult> startNumberVerification({
+    required String url,
+    Map<String, String> headers = const {},
+    Map<String, String> queryParameters = const {},
+  }) async {
+    final result =
+        await _methodChannel.invokeMethod<String>('startNumberVerification');
+    if (result == null) {
+      return const FlutterVonageSDKFailure('No result.');
+    }
 
-  /// Platform-specific implementations should set this with their own
-  /// platform-specific class that extends [FlutterVonageNumberVerificationPlatform] when
-  /// they register themselves.
-  static set instance(FlutterVonageNumberVerificationPlatform instance) {
-    PlatformInterface.verifyToken(instance, _token);
-    _instance = instance;
-  }
+    final jsonResult = jsonDecode(result) as Map;
+    final error = jsonResult['error'] as Map?;
+    if (error != null) {
+      return FlutterVonageSDKFailure(error['message']);
+    }
 
-  Future<String?> getPlatformVersion() {
-    throw UnimplementedError('platformVersion() has not been implemented.');
+    return FlutterVonageSDKSuccess(jsonResult['data']);
   }
+}
+
+sealed class FlutterVonageSDKResult {}
+
+final class FlutterVonageSDKSuccess implements FlutterVonageSDKResult {
+  const FlutterVonageSDKSuccess(this.data);
+
+  final Map<String, dynamic> data;
+}
+
+final class FlutterVonageSDKFailure implements FlutterVonageSDKResult {
+  const FlutterVonageSDKFailure(this.errorMessage);
+
+  final String errorMessage;
 }
