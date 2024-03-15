@@ -14,8 +14,10 @@ class FlutterVonageNumberVerificationSDK {
     Map<String, String> headers = const {},
     Map<String, String> queryParameters = const {},
   }) async {
-    final result =
-        await _methodChannel.invokeMethod<String>('startNumberVerification');
+    final result = await _methodChannel.invokeMethod<String>(
+      'startNumberVerification',
+      {'url': url, 'headers': headers, 'queryParameters': queryParameters},
+    );
     if (result == null) {
       return const FlutterVonageSDKFailure('No result.');
     }
@@ -25,17 +27,26 @@ class FlutterVonageNumberVerificationSDK {
     if (error != null) {
       return FlutterVonageSDKFailure(error['message']);
     }
+    final data = jsonResult['data'] as Map?;
+    if (data == null) {
+      return const FlutterVonageSDKFailure('Something went wrong. No data');
+    }
 
-    return FlutterVonageSDKSuccess(jsonResult['data']);
+    return FlutterVonageSDKSuccess(
+      data: data['response_body'],
+      statusCode: data['http_status'],
+    );
   }
 }
 
 sealed class FlutterVonageSDKResult {}
 
 final class FlutterVonageSDKSuccess implements FlutterVonageSDKResult {
-  const FlutterVonageSDKSuccess(this.data);
+  const FlutterVonageSDKSuccess({required this.data, this.statusCode});
 
+  /// The response body of the HTTP request.
   final Map<String, dynamic> data;
+  final int? statusCode;
 }
 
 final class FlutterVonageSDKFailure implements FlutterVonageSDKResult {

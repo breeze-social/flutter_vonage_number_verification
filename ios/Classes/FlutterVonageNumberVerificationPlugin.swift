@@ -25,8 +25,9 @@ public class FlutterVonageNumberVerificationPlugin: NSObject, FlutterPlugin {
     }
 
     private func handleStartNumberVerification(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) async {
-        guard let argsMap = call.arguments as? [String: String] else {
-            result(createErrorJson("Invalid method call arguments."))
+        print(type(of: call.arguments))
+        guard let argsMap = call.arguments as? [String: Any] else {
+            result(createErrorJson("Invalid arguments."))
             return
         }
 
@@ -38,7 +39,7 @@ public class FlutterVonageNumberVerificationPlugin: NSObject, FlutterPlugin {
             optionalArgs = nil
         }
         guard let args = optionalArgs else {
-            result(createErrorJson("Failed to parse arguments."))
+            result(createErrorJson("Failed to parse arguments. All values must not be null."))
             return
         }
 
