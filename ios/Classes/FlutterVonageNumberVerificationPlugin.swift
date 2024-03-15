@@ -25,7 +25,6 @@ public class FlutterVonageNumberVerificationPlugin: NSObject, FlutterPlugin {
     }
 
     private func handleStartNumberVerification(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) async {
-        print(type(of: call.arguments))
         guard let argsMap = call.arguments as? [String: Any] else {
             result(createErrorJson("Invalid arguments."))
             return

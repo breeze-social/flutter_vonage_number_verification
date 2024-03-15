@@ -1,6 +1,6 @@
 name: flutter_vonage_number_verification
-description: "A new Flutter plugin project."
-version: 0.0.1
+description: "Lets you make HTTP requests over cellular, even when on WiFi. Meant to be used as part of the Vonage Number Verification flow."
+version: 1.0.0
 homepage: https://github.com/breeze-social/flutter_vonage_number_verification
 repository: https://github.com/breeze-social/flutter_vonage_number_verification
 issue_tracker: https://github.com/breeze-social/flutter_vonage_number_verification/issues
